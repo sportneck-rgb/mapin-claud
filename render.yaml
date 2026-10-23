@@ -1,0 +1,27 @@
+# Blueprint de Render: crea el servicio web y su disco persistente.
+services:
+  - type: web
+    name: vecinos-con-oficio
+    runtime: node
+    plan: starter            # con disco persistente se necesita un plan de pago
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+    disk:
+      name: datos
+      mountPath: /var/data   # aquí se guardan cuentas, ofertas y fotos
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_PATH
+        value: /var/data
+      - key: TRUST_PROXY
+        value: "2"
+      - key: MAIL_FROM        # ej: Vecinos con oficio <no-responder@tu-dominio.cl>
+        sync: false
+      - key: BREVO_API_KEY    # clave de API de Brevo
+        sync: false
+      - key: APP_URL          # solo si usas dominio propio (https://...)
+        sync: false

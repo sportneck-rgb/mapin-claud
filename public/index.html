@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vecinos con oficio · habilidades y trabajo local</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+  <div id="map"></div>
+
+  <aside id="panel">
+    <header>
+      <h1>Vecinos con oficio</h1>
+      <p id="conectados">Conectando…</p>
+    </header>
+
+    <section id="cuenta">
+      <button id="btn-ingresar" class="btn primario" type="button">Ingresar con mi correo</button>
+      <div id="perfil" hidden>
+        <div class="mi-foto">
+          <img id="mi-avatar" alt="Tu foto" hidden>
+          <input id="mi-nombre" maxlength="30" autocomplete="given-name" placeholder="Tu nombre de pila" aria-label="Tu nombre de pila">
+        </div>
+        <div class="mi-foto">
+          <button id="btn-avatar" class="btn" type="button">Poner mi foto</button>
+          <button id="quitar-avatar" class="btn" type="button" hidden>Quitar foto</button>
+          <button id="btn-salir" class="btn" type="button">Salir</button>
+        </div>
+        <small id="mi-correo"></small>
+        <button id="btn-eliminar" class="btn peligro" type="button">Eliminar mi cuenta y mis datos</button>
+        <input id="archivo-avatar" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+      </div>
+    </section>
+
+    <div class="tabs" role="tablist">
+      <button id="tab-oficios" role="tab" aria-selected="true" type="button">Vecinos con oficio</button>
+      <button id="tab-empleos" role="tab" aria-selected="false" type="button">Ofertas de trabajo</button>
+    </div>
+    <div class="filtros">
+      <input id="buscar" type="search" placeholder="Busca: gasfiter, clases, costura" aria-label="Buscar">
+      <select id="filtro-cat" aria-label="Filtrar por categoría"></select>
+    </div>
+    <ul id="lista" aria-live="polite"></ul>
+    <button id="btn-ofrecer" class="btn primario" type="button">Ofrecer mi habilidad</button>
+    <a class="pie" href="/privacidad.html" target="_blank" rel="noopener">Privacidad y datos</a>
+  </aside>
+
+  <div id="aviso" role="status" hidden></div>
+
+  <!-- Ingreso -->
+  <dialog id="dlg-login">
+    <form id="form-login">
+      <h2>Ingresa con tu correo</h2>
+      <p>Te enviamos un enlace de acceso, sin contraseñas. Con tu cuenta puedes publicar, dar me gusta y escribir consultas.</p>
+      <label>Correo
+        <input name="email" type="email" required autocomplete="email" placeholder="tu@correo.cl">
+      </label>
+      <p id="login-msg" role="status"></p>
+      <div class="acciones">
+        <button type="button" id="login-cancelar" class="btn">Cerrar</button>
+        <button type="submit" class="btn primario">Enviar enlace</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Ofrecer una habilidad -->
+  <dialog id="dlg">
+    <form id="form-oferta">
+      <h2>Ofrece tu habilidad</h2>
+      <label>¿Qué haces?
+        <input name="titulo" required minlength="4" maxlength="80" placeholder="Ej. Gasfitería a domicilio">
+      </label>
+      <label>Categoría
+        <select name="categoria" id="sel-cat"></select>
+      </label>
+      <label>Cuéntales más
+        <textarea name="descripcion" required minlength="10" maxlength="500" rows="3" placeholder="Experiencia, horarios, qué incluye"></textarea>
+      </label>
+      <div class="dos">
+        <label>Modalidad
+          <select name="modalidad"><option>presencial</option><option>remoto</option><option>ambas</option></select>
+        </label>
+        <label>Tarifa
+          <select name="tarifa"><option>a convenir</option><option>por hora</option><option>gratis</option><option>trueque</option></select>
+        </label>
+      </div>
+      <label>WhatsApp (con código de país)
+        <input name="whatsapp" type="tel" required inputmode="numeric" placeholder="56912345678">
+      </label>
+      <label>Fotos o videos (opcional, hasta 4)
+        <input id="archivos" type="file" multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/webm">
+      </label>
+      <fieldset>
+        <legend>Tu zona</legend>
+        <p class="ubic-estado">Sin marcar. En el mapa solo se verá una zona aproximada.</p>
+        <div class="dos">
+          <button type="button" class="btn usar-gps">Usar mi ubicación</button>
+          <button type="button" class="btn marcar">Marcar en el mapa</button>
+        </div>
+      </fieldset>
+      <div class="acciones">
+        <button type="button" id="cancelar" class="btn">Cancelar</button>
+        <button type="submit" class="btn primario">Publicar oferta</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Publicar un trabajo -->
+  <dialog id="dlg-empleo">
+    <form id="form-empleo">
+      <h2>Publica un trabajo</h2>
+      <label>¿Qué trabajo ofreces?
+        <input name="titulo" required minlength="4" maxlength="80" placeholder="Ej. Ayudante de cocina fin de semana">
+      </label>
+      <label>Categoría
+        <select name="categoria" id="sel-cat-emp"></select>
+      </label>
+      <label>Descripción
+        <textarea name="descripcion" required minlength="10" maxlength="600" rows="3" placeholder="Tareas, horario, requisitos"></textarea>
+      </label>
+      <div class="dos">
+        <label>Modalidad
+          <select name="modalidad"><option value="presencial">presencial</option><option value="remoto">remoto</option><option value="hibrido">híbrido</option></select>
+        </label>
+        <label>Tipo
+          <select name="contrato"><option value="puntual">trabajo puntual</option><option value="part-time">part-time</option><option value="full-time">full-time</option><option value="honorarios">a honorarios</option></select>
+        </label>
+      </div>
+      <div class="dos">
+        <label>Pago
+          <input name="pago" maxlength="40" placeholder="Ej. $15.000 por hora">
+        </label>
+        <label>Vigente por
+          <select name="dias"><option value="7">7 días</option><option value="15">15 días</option><option value="30" selected>30 días</option></select>
+        </label>
+      </div>
+      <label>Publicas como
+        <select name="publicaComo" id="publica-como"><option value="vecino">Vecino o vecina</option><option value="empresa">Empresa o negocio</option></select>
+      </label>
+      <label id="campo-empresa" hidden>Nombre de la empresa
+        <input name="empresa" maxlength="60" placeholder="Ej. Panadería El Trigal">
+      </label>
+      <label>Logo o imagen para el marcador (opcional)
+        <input id="logo-empleo" type="file" accept="image/jpeg,image/png,image/webp">
+        <small>Si no subes nada, tu marcador usa el ícono 💼.</small>
+      </label>
+      <label>WhatsApp para postular (con código de país)
+        <input name="whatsapp" type="tel" required inputmode="numeric" placeholder="56912345678">
+      </label>
+      <fieldset>
+        <legend>Zona del trabajo</legend>
+        <p class="ubic-estado">Sin marcar. En el mapa solo se verá una zona aproximada.</p>
+        <div class="dos">
+          <button type="button" class="btn usar-gps">Usar mi ubicación</button>
+          <button type="button" class="btn marcar">Marcar en el mapa</button>
+        </div>
+      </fieldset>
+      <div class="acciones">
+        <button type="button" id="cancelar-emp" class="btn">Cancelar</button>
+        <button type="submit" class="btn primario">Publicar trabajo</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="visor">
+    <img id="visor-img" alt="">
+    <button type="button" id="visor-cerrar" class="btn">Cerrar</button>
+  </dialog>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="rangos.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

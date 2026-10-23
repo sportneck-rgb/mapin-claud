@@ -1,0 +1,155 @@
+:root {
+  --tinta: #12343b;
+  --rio: #1f6f78;
+  --niebla: #eef4f4;
+  --linea: #c9dada;
+  --ocre: #f2b705;
+  --alerta: #b3261e;
+  --radio: 12px;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; color: var(--tinta); }
+
+#map { position: absolute; inset: 0; z-index: 1; }
+body.eligiendo #map { cursor: crosshair; }
+
+/* Panel lateral (hoja inferior en móvil) */
+#panel {
+  position: fixed; z-index: 1000; top: 12px; left: 12px; bottom: 12px; width: 340px;
+  display: flex; flex-direction: column; gap: 10px; padding: 14px;
+  background: var(--niebla); border-radius: 16px; box-shadow: 0 4px 18px rgb(18 52 59 / 25%);
+}
+#panel h1 { margin: 0; font-size: 1.35rem; }
+#conectados { margin: 2px 0 0; font-size: .85rem; color: var(--rio); }
+.filtros { display: grid; gap: 6px; }
+#lista { flex: 1; overflow: auto; margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; align-content: start; }
+#lista button {
+  width: 100%; text-align: left; padding: 8px 10px; background: #fff; color: inherit;
+  border: 1px solid var(--linea); border-radius: 10px; cursor: pointer; font: inherit;
+}
+#lista button:hover { border-color: var(--rio); }
+#lista strong { display: block; }
+#lista small { color: var(--rio); }
+#lista .vacio { padding: 10px; font-size: .9rem; }
+
+/* Controles */
+input, select, textarea {
+  width: 100%; padding: 8px 10px; font: inherit; color: inherit;
+  background: #fff; border: 1px solid var(--linea); border-radius: 8px;
+}
+:focus-visible { outline: 3px solid var(--ocre); outline-offset: 1px; }
+.btn {
+  display: inline-block; padding: 9px 14px; font: inherit; text-align: center; text-decoration: none;
+  color: var(--tinta); background: #fff; border: 1px solid var(--rio); border-radius: 10px; cursor: pointer;
+}
+.btn:hover { background: #e2eeee; }
+.btn.primario { color: #fff; background: var(--rio); }
+.btn.primario:hover { background: var(--tinta); }
+.btn.peligro { color: var(--alerta); border-color: var(--alerta); }
+
+/* Marcadores */
+.pin {
+  display: grid; place-items: center; width: 38px; height: 38px; font-size: 20px;
+  background: #fff; border: 3px solid var(--rio); border-radius: 50% 50% 50% 8px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 30%);
+}
+.tarjeta h3 { margin: 0 0 4px; font-size: 1.05rem; }
+.tarjeta p { margin: 4px 0; }
+.tarjeta .meta { font-size: .85rem; color: var(--rio); }
+.tarjeta .acciones { display: grid; gap: 6px; margin-top: 8px; }
+
+/* Aviso */
+#aviso {
+  position: fixed; z-index: 2000; top: 14px; left: 50%; transform: translateX(-50%);
+  max-width: 90vw; padding: 10px 16px; color: #fff; background: var(--tinta); border-radius: 10px;
+}
+
+/* Formulario */
+dialog { width: min(440px, 92vw); padding: 0; border: none; border-radius: 16px; color: var(--tinta); }
+dialog::backdrop { background: rgb(18 52 59 / 55%); }
+#form-oferta { display: grid; gap: 10px; padding: 18px; }
+#form-oferta h2 { margin: 0; }
+#form-oferta label { display: grid; gap: 4px; font-weight: 700; }
+#form-oferta label > * { font-weight: 400; }
+fieldset { margin: 0; padding: 8px 10px; border: 1px solid var(--linea); border-radius: 10px; }
+fieldset p { margin: 2px 0 8px; font-size: .9rem; }
+.dos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.acciones { display: flex; justify-content: flex-end; gap: 8px; }
+
+@media (max-width: 700px) {
+  #panel { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; height: 44dvh; }
+  .leaflet-top.leaflet-right { top: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+
+/* Likes, galería y consultas */
+.tarjeta .acciones { grid-template-columns: 1fr; }
+.btn.like[aria-pressed="true"] { color: var(--alerta); border-color: var(--alerta); }
+.galeria { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 8px; }
+.galeria .item { position: relative; }
+.galeria img, .galeria video { display: block; width: 100%; height: 96px; object-fit: cover; border-radius: 8px; background: #000; }
+.galeria img { cursor: zoom-in; }
+.galeria .quitar {
+  position: absolute; top: 3px; right: 3px; width: 24px; height: 24px; padding: 0; line-height: 1;
+  color: #fff; background: rgb(18 52 59 / 80%); border: none; border-radius: 50%; cursor: pointer;
+}
+details.chat { margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--linea); }
+details.chat summary { cursor: pointer; font-weight: 700; }
+.mensajes { max-height: 150px; overflow: auto; margin: 6px 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.mensajes li { padding: 6px 8px; background: var(--niebla); border-radius: 8px; }
+.mensajes p { margin: 2px 0; overflow-wrap: anywhere; }
+.mensajes small { color: var(--rio); }
+.insignia { margin-left: 6px; padding: 1px 6px; font-size: .75rem; font-weight: 400; background: var(--ocre); border-radius: 6px; }
+.chat-form { display: grid; gap: 4px; }
+#visor { width: min(92vw, 900px); padding: 10px; background: #000; border: none; border-radius: 12px; text-align: right; }
+#visor::backdrop { background: rgb(0 0 0 / 80%); }
+#visor img { display: block; width: 100%; max-height: 78dvh; object-fit: contain; margin-bottom: 8px; }
+
+/* Marcador con avatar, corazón de likes e insignia de grado */
+.marca { position: relative; width: 46px; height: 46px; }
+.pin { width: 46px; height: 46px; overflow: hidden; border-radius: 50%; border-width: 3px; font-size: 22px; }
+.pin { position: relative; }
+/* Selector más específico que el de Leaflet (que fuerza width:auto en las imágenes de los marcadores) */
+.leaflet-container .marca .pin img {
+  position: absolute; inset: 0; display: block;
+  width: 100%; height: 100%; max-width: none;
+  object-fit: cover; object-position: center;
+  border-radius: 50%; padding: 0; margin: 0;
+  pointer-events: none; user-select: none; -webkit-user-drag: none;
+}
+.marca-like, .marca-rango { position: absolute; line-height: 0; filter: drop-shadow(0 1px 2px rgb(0 0 0 / 45%)); }
+.marca-like { top: -11px; right: -13px; }
+.marca-rango { bottom: -9px; right: -11px; }
+.mi-foto { display: flex; align-items: center; gap: 8px; }
+.mi-foto img { width: 36px; height: 36px; object-fit: cover; border: 2px solid var(--rio); border-radius: 50%; }
+.mi-foto .btn { padding: 6px 10px; font-size: .9rem; }
+
+/* Cuenta, pestañas y empleos */
+dialog { max-height: 92dvh; overflow: auto; }
+#form-login, #form-empleo { display: grid; gap: 10px; padding: 18px; }
+#form-login h2, #form-empleo h2 { margin: 0; }
+#form-login label, #form-empleo label { display: grid; gap: 4px; font-weight: 700; }
+#form-login label > *, #form-empleo label > * { font-weight: 400; }
+#form-login p { margin: 0; }
+#login-msg:empty { display: none; }
+#cuenta { display: grid; gap: 6px; }
+#perfil { display: grid; gap: 6px; }
+#perfil small { color: var(--rio); overflow-wrap: anywhere; }
+#perfil .btn { padding: 6px 10px; font-size: .9rem; }
+.mi-foto input { flex: 1; min-width: 0; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 3px; background: #dbe8e8; border-radius: 10px; }
+.tabs button { padding: 7px 6px; font: inherit; font-size: .9rem; color: var(--tinta); background: transparent; border: none; border-radius: 8px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: #fff; font-weight: 700; box-shadow: 0 1px 3px rgb(0 0 0 / 20%); }
+.pin.empleo { border-color: var(--ocre); border-radius: 12px; background: #fff3c4; }
+.tarjeta .publica { font-weight: 700; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+#panel { overflow: auto; }
+#lista { min-height: 140px; }
+
+/* Logo en el marcador y en el popup de un trabajo */
+.leaflet-container .marca .pin.empleo img { object-fit: contain; padding: 3px; background: #fff; border-radius: 9px; }
+.tarjeta .logo-popup { display: block; width: 64px; height: 64px; margin-bottom: 6px; object-fit: contain; background: #fff; border: 1px solid var(--linea); border-radius: 10px; }
+#form-empleo small { color: var(--rio); }
+
+.pie { align-self: center; font-size: .8rem; color: var(--rio); }
